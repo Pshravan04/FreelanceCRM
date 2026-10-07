@@ -142,7 +142,10 @@ export default function SettingsPage() {
           {activeTab !== 'profile' && (
             <div className="card p-12 text-center animate-fade-in">
               <div className="mx-auto w-12 h-12 bg-[var(--color-muted)] rounded-full flex items-center justify-center mb-4">
-                {tabs.find(t => t.id === activeTab)?.icon({ size: 24, className: 'text-[var(--color-muted-foreground)]' })}
+                {(() => {
+                  const Icon = tabs.find(t => t.id === activeTab)?.icon;
+                  return Icon ? <Icon size={24} className="text-[var(--color-muted-foreground)]" /> : null;
+                })()}
               </div>
               <h3 className="text-lg font-semibold mb-2">Coming Soon</h3>
               <p className="text-[var(--color-muted-foreground)] text-sm max-w-sm mx-auto">
