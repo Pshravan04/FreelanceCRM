@@ -624,6 +624,82 @@ export async function createActivity(activity: Omit<Activity, 'id' | 'user_id' |
 }
 
 // ============================================
+// FREELANCERS
+// ============================================
+
+export async function getFreelancers(filters?: {
+  availability?: string;
+  search?: string;
+}) {
+  const supabase = createClient();
+  let query = supabase
+    .from('freelancers')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (filters?.availability) query = query.eq('availability', filters.availability);
+  if (filters?.search) {
+    query = query.or(`full_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,freelancer_type.ilike.%${filters.search}%`);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return data as any[]; // Using any to avoid type check issues if type isn't fully exported yet
+}
+
+export async function getFreelancer(id: string) {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('freelancers')
+    .select('*')
+    .eq('id', id)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function createFreelancer(freelancer: any) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+
+  const { data, error } = await supabase
+    .from('freelancers')
+    .insert({ ...freelancer, user_id: user.id })
+    .select()
+    .single();
+  if (error) throw error;
+
+  await createActivity({
+    entity_type: 'freelancer',
+    entity_id: data.id,
+    action: 'created',
+    description: `Added freelancer "${data.full_name}"`,
+  });
+
+  return data;
+}
+
+export async function updateFreelancer(id: string, updates: any) {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('freelancers')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteFreelancer(id: string) {
+  const supabase = createClient();
+  const { error } = await supabase.from('freelancers').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// ============================================
 // DASHBOARD STATS
 // ============================================
 

@@ -21,6 +21,7 @@ export function MobileNav() {
   const moreLinks = [
     { href: '/projects', label: 'Projects' },
     { href: '/invoices', label: 'Invoices' },
+    { href: '/freelancers', label: 'Freelancers' },
     { href: '/tasks', label: 'Tasks' },
     { href: '/payments', label: 'Payments' },
     { href: '/follow-ups', label: 'Follow Ups' },

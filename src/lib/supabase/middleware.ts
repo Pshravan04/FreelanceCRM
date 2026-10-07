@@ -25,31 +25,68 @@ export async function updateSession(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
+  let role = 'admin';
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single();
+    if (profile?.role) {
+      role = profile.role;
+    }
+  }
+
+  const isAuthPage = request.nextUrl.pathname === '/login' ||
+      request.nextUrl.pathname === '/signup' ||
+      request.nextUrl.pathname.startsWith('/forgot-password') ||
+      request.nextUrl.pathname.startsWith('/reset-password') ||
+      request.nextUrl.pathname.startsWith('/auth') ||
+      request.nextUrl.pathname === '/client-portal/login';
+
   // Redirect unauthenticated users trying to access protected routes
-  if (!user && !request.nextUrl.pathname.startsWith('/login') &&
-      !request.nextUrl.pathname.startsWith('/signup') &&
-      !request.nextUrl.pathname.startsWith('/forgot-password') &&
-      !request.nextUrl.pathname.startsWith('/reset-password') &&
-      !request.nextUrl.pathname.startsWith('/auth')) {
+  if (!user && !isAuthPage) {
     const url = request.nextUrl.clone();
-    url.pathname = '/login';
+    if (request.nextUrl.pathname.startsWith('/client-portal')) {
+      url.pathname = '/client-portal/login';
+    } else {
+      url.pathname = '/login';
+    }
     return NextResponse.redirect(url);
   }
 
   // Redirect authenticated users away from auth pages
-  if (user && (
-    request.nextUrl.pathname === '/login' ||
-    request.nextUrl.pathname === '/signup'
-  )) {
+  if (user && isAuthPage) {
     const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
+    url.pathname = role === 'client' ? '/client-portal' : '/dashboard';
     return NextResponse.redirect(url);
   }
 
-  // Redirect root to dashboard or login
+  // Role-based routing protection
+  if (user && request.nextUrl.pathname !== '/') {
+    const isClientPortal = request.nextUrl.pathname.startsWith('/client-portal');
+    
+    if (role === 'client' && !isClientPortal) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/client-portal';
+      return NextResponse.redirect(url);
+    }
+    
+    if (role === 'admin' && isClientPortal) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/dashboard';
+      return NextResponse.redirect(url);
+    }
+  }
+
+  // Redirect root to dashboard or client-portal
   if (request.nextUrl.pathname === '/') {
     const url = request.nextUrl.clone();
-    url.pathname = user ? '/dashboard' : '/login';
+    if (user) {
+      url.pathname = role === 'client' ? '/client-portal' : '/dashboard';
+    } else {
+      url.pathname = '/login';
+    }
     return NextResponse.redirect(url);
   }
 

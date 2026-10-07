@@ -14,6 +14,8 @@ export type NotificationType = 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR';
 export interface Profile {
   id: string;
   user_id: string;
+  role: 'admin' | 'client' | 'freelancer';
+  client_id: string | null;
   full_name: string | null;
   avatar_url: string | null;
   business_name: string | null;
@@ -62,6 +64,7 @@ export interface Client {
   address: string | null;
   notes: string | null;
   is_active: boolean;
+  portal_access_email: string | null;
   created_at: string;
   updated_at: string;
   // Computed fields
@@ -94,6 +97,7 @@ export interface Task {
   user_id: string;
   project_id: string | null;
   client_id: string | null;
+  freelancer_id: string | null;
   title: string;
   description: string | null;
   status: TaskStatus;
@@ -105,6 +109,7 @@ export interface Task {
   // Relations
   project?: Project;
   client?: Client;
+  freelancer?: Freelancer;
 }
 
 export interface Invoice {
@@ -201,7 +206,67 @@ export interface CRMFile {
   file_path: string;
   file_type: string | null;
   file_size: number | null;
+  is_client_visible: boolean;
   created_at: string;
+  // Relations
+  client?: Client;
+  project?: Project;
+}
+
+export type FreelancerAvailability = 'Available' | 'Partially Available' | 'Busy' | 'Unavailable' | 'On Leave' | 'Inactive';
+
+export interface Freelancer {
+  id: string;
+  user_id: string;
+  full_name: string;
+  email: string | null;
+  phone: string | null;
+  location: string | null;
+  bio: string | null;
+  freelancer_type: string | null;
+  skills: string[];
+  hourly_rate: number;
+  project_rate: number;
+  availability: FreelancerAvailability;
+  availability_note: string | null;
+  current_workload: number;
+  portfolio_url: string | null;
+  instagram_url: string | null;
+  linkedin_url: string | null;
+  website_url: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type MilestoneStatus = 'Upcoming' | 'In Progress' | 'Completed';
+
+export interface Milestone {
+  id: string;
+  user_id: string;
+  project_id: string;
+  title: string;
+  description: string | null;
+  status: MilestoneStatus;
+  order: number;
+  due_date: string | null;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+  // Relations
+  project?: Project;
+}
+
+export interface ClientUpdate {
+  id: string;
+  user_id: string;
+  client_id: string;
+  project_id: string | null;
+  title: string;
+  content: string | null;
+  is_visible_to_client: boolean;
+  created_at: string;
+  updated_at: string;
   // Relations
   client?: Client;
   project?: Project;

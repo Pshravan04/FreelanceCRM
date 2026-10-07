@@ -37,6 +37,7 @@ export function AddClientModal({ open, onClose, onSuccess }: AddClientModalProps
         ...form,
         lead_id: null,
         is_active: true,
+        portal_access_email: null,
       });
       toast.success('Client created successfully');
       onSuccess(client);

@@ -17,6 +17,7 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
   const [payments, setPayments] = useState<Payment[]>([]);
   const [followUps, setFollowUps] = useState<FollowUp[]>([]);
   const [loading, setLoading] = useState(true);
+  const [enablingPortal, setEnablingPortal] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -53,6 +54,31 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
       router.push('/clients');
     } catch {
       toast.error('Failed to delete client');
+    }
+  };
+
+  const handleEnablePortal = async () => {
+    if (!client || !client.email) {
+      toast.error('Client must have an email address to enable portal access');
+      return;
+    }
+    
+    setEnablingPortal(true);
+    try {
+      const res = await fetch('/api/clients/portal-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId: client.id, email: client.email, name: client.name })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      
+      toast.success('Portal access enabled. Invite sent to client.');
+      setClient({ ...client, portal_access_email: client.email });
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to enable portal access');
+    } finally {
+      setEnablingPortal(false);
     }
   };
 
@@ -139,6 +165,45 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Portal Access */}
+          <div className="card p-5 border-blue-100 dark:border-blue-900/30">
+            <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-blue-600 dark:text-blue-400">
+              <Globe size={16} /> Client Portal Access
+            </h3>
+            {client.portal_access_email ? (
+              <div>
+                <p className="text-sm text-[var(--color-foreground)] mb-2">
+                  Portal access is <span className="font-bold text-green-600">Active</span>
+                </p>
+                <p className="text-xs text-[var(--color-muted-foreground)] mb-3">
+                  Account email: {client.portal_access_email}
+                </p>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/client-portal/login`);
+                    toast.success('Portal link copied to clipboard');
+                  }}
+                  className="w-full px-3 py-2 text-sm font-medium bg-zinc-100 dark:bg-zinc-800 text-[var(--color-foreground)] rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                >
+                  Copy Portal Link
+                </button>
+              </div>
+            ) : (
+              <div>
+                <p className="text-xs text-[var(--color-muted-foreground)] mb-3 leading-relaxed">
+                  Enable the client portal to allow this client to securely view their projects, milestones, invoices, and updates.
+                </p>
+                <button 
+                  onClick={handleEnablePortal}
+                  disabled={enablingPortal}
+                  className="w-full px-3 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+                >
+                  {enablingPortal ? 'Enabling...' : 'Enable Portal Access'}
+                </button>
+              </div>
+            )}
           </div>
 
           {client.notes && (

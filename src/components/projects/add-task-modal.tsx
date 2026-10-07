@@ -35,6 +35,7 @@ export function AddTaskModal({ open, onClose, onSuccess, project }: AddTaskModal
         ...form,
         project_id: project.id,
         client_id: project.client_id,
+        freelancer_id: null,
         due_date: form.due_date || null,
         completed_at: null,
       });

@@ -19,11 +19,8 @@ const navItems = [
   { href: '/leads', icon: Users2, label: 'Leads' },
   { href: '/clients', icon: UserCheck, label: 'Clients' },
   { href: '/projects', icon: FolderKanban, label: 'Projects' },
-  { href: '/tasks', icon: CheckSquare, label: 'Tasks' },
   { href: '/invoices', icon: FileText, label: 'Invoices' },
-  { href: '/payments', icon: CreditCard, label: 'Payments' },
-  { href: '/calendar', icon: Calendar, label: 'Calendar' },
-  { href: '/analytics', icon: BarChart2, label: 'Analytics' },
+  { href: '/freelancers', icon: Users2, label: 'Freelancers' },
 ];
 
 const secondaryItems = [
