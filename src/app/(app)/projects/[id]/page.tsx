@@ -105,12 +105,12 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
           <button
             onClick={handleDelete}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+            className="flex-shrink-0 flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
           >
-            <Trash2 size={14} /> Delete
+            <Trash2 size={14} /> <span>Delete</span>
           </button>
         </div>
       </div>

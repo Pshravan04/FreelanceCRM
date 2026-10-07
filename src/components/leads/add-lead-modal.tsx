@@ -68,22 +68,27 @@ export function AddLeadModal({ open, onClose, onSuccess }: AddLeadModalProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full max-w-2xl bg-[var(--color-card)] rounded-xl border border-[var(--color-border)] shadow-2xl max-h-[90vh] overflow-y-auto animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
+      <div className="fixed inset-0 bg-black/40 transition-opacity" onClick={onClose} />
+      <div className="relative w-full max-w-2xl bg-[var(--color-card)] md:rounded-xl rounded-t-2xl border-t md:border border-[var(--color-border)] shadow-2xl max-h-[90vh] overflow-y-auto animate-slide-up md:animate-fade-in pb-[env(safe-area-inset-bottom)]">
+        {/* Mobile handle */}
+        <div className="w-full flex justify-center pt-3 pb-1 md:hidden" onClick={onClose}>
+          <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+        </div>
+        
         {/* Header */}
-        <div className="sticky top-0 bg-[var(--color-card)] border-b border-[var(--color-border)] px-6 py-4 flex items-center justify-between">
+        <div className="sticky top-0 bg-[var(--color-card)] border-b border-[var(--color-border)] px-4 md:px-6 py-3 md:py-4 flex items-center justify-between z-10">
           <h2 className="text-base font-semibold">Add New Lead</h2>
           <button onClick={onClose} className="p-1.5 rounded-md hover:bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
             <X size={16} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-4 md:p-6 space-y-4 md:space-y-5">
           {/* Basic info */}
           <div>
             <h3 className="text-xs font-semibold text-[var(--color-muted-foreground)] uppercase tracking-wider mb-3">Contact Information</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
               <FormField label="Full Name *" required>
                 <input type="text" value={form.name} onChange={e => set('name', e.target.value)} placeholder="John Smith" required className={inputClass} />
               </FormField>
@@ -91,13 +96,13 @@ export function AddLeadModal({ open, onClose, onSuccess }: AddLeadModalProps) {
                 <input type="text" value={form.company} onChange={e => set('company', e.target.value)} placeholder="Company Inc." className={inputClass} />
               </FormField>
               <FormField label="Email">
-                <input type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="john@example.com" className={inputClass} />
+                <input type="email" inputMode="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="john@example.com" className={inputClass} />
               </FormField>
               <FormField label="Phone">
-                <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="+91 9999999999" className={inputClass} />
+                <input type="tel" inputMode="tel" value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="+91 9999999999" className={inputClass} />
               </FormField>
               <FormField label="Website">
-                <input type="url" value={form.website} onChange={e => set('website', e.target.value)} placeholder="https://example.com" className={inputClass} />
+                <input type="url" inputMode="url" value={form.website} onChange={e => set('website', e.target.value)} placeholder="https://example.com" className={inputClass} />
               </FormField>
               <FormField label="Instagram">
                 <input type="text" value={form.instagram} onChange={e => set('instagram', e.target.value)} placeholder="@handle" className={inputClass} />
@@ -108,7 +113,7 @@ export function AddLeadModal({ open, onClose, onSuccess }: AddLeadModalProps) {
           {/* Lead info */}
           <div>
             <h3 className="text-xs font-semibold text-[var(--color-muted-foreground)] uppercase tracking-wider mb-3">Lead Information</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
               <FormField label="Source">
                 <select value={form.source} onChange={e => set('source', e.target.value)} className={inputClass}>
                   {LEAD_SOURCES.map(s => <option key={s}>{s}</option>)}

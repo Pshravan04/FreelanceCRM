@@ -88,17 +88,17 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-muted)] transition-colors">
-            <Edit2 size={14} /> Edit
+        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+          <button className="flex-shrink-0 flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-muted)] transition-colors">
+            <Edit2 size={14} /> <span>Edit</span>
           </button>
-          <button onClick={handleDelete} className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">
-            <Trash2 size={14} /> Delete
+          <button onClick={handleDelete} className="flex-shrink-0 flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">
+            <Trash2 size={14} /> <span>Delete</span>
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         {/* Left Col - Details & Stats */}
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
@@ -210,32 +210,52 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
             {invoices.length === 0 ? (
               <p className="text-sm text-[var(--color-muted-foreground)] text-center py-6">No invoices yet.</p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-left text-[var(--color-muted-foreground)] border-b border-[var(--color-border)]">
-                      <th className="pb-2 font-medium">Invoice</th>
-                      <th className="pb-2 font-medium">Status</th>
-                      <th className="pb-2 font-medium">Due</th>
-                      <th className="pb-2 font-medium text-right">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {invoices.map(inv => (
-                      <tr key={inv.id} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-muted)]/50 cursor-pointer" onClick={() => router.push(`/invoices/${inv.id}`)}>
-                        <td className="py-3 font-medium">{inv.invoice_number}</td>
-                        <td className="py-3">
-                          <span className={cn('text-[10px] font-medium px-2 py-0.5 rounded-full border', getStatusColor(inv.status))}>
-                            {inv.status}
-                          </span>
-                        </td>
-                        <td className="py-3 text-[var(--color-muted-foreground)] text-xs">{formatDate(inv.due_date)}</td>
-                        <td className="py-3 text-right font-medium">{formatCurrency(inv.total, inv.currency)}</td>
+              <>
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-[var(--color-muted-foreground)] border-b border-[var(--color-border)]">
+                        <th className="pb-2 font-medium">Invoice</th>
+                        <th className="pb-2 font-medium">Status</th>
+                        <th className="pb-2 font-medium">Due</th>
+                        <th className="pb-2 font-medium text-right">Amount</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {invoices.map(inv => (
+                        <tr key={inv.id} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-muted)]/50 cursor-pointer" onClick={() => router.push(`/invoices/${inv.id}`)}>
+                          <td className="py-3 font-medium">{inv.invoice_number}</td>
+                          <td className="py-3">
+                            <span className={cn('text-[10px] font-medium px-2 py-0.5 rounded-full border', getStatusColor(inv.status))}>
+                              {inv.status}
+                            </span>
+                          </td>
+                          <td className="py-3 text-[var(--color-muted-foreground)] text-xs">{formatDate(inv.due_date)}</td>
+                          <td className="py-3 text-right font-medium">{formatCurrency(inv.total, inv.currency)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Invoices List */}
+                <div className="md:hidden flex flex-col space-y-3">
+                  {invoices.map(inv => (
+                    <div key={inv.id} onClick={() => router.push(`/invoices/${inv.id}`)} className="p-3 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-muted-foreground)] transition-colors cursor-pointer">
+                      <div className="flex items-start justify-between mb-2">
+                        <span className="font-medium text-sm">{inv.invoice_number}</span>
+                        <span className={cn('text-[10px] font-medium px-2 py-0.5 rounded-full border', getStatusColor(inv.status))}>
+                          {inv.status}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-[var(--color-muted-foreground)] text-xs">Due: {formatDate(inv.due_date)}</span>
+                        <span className="font-semibold text-sm">{formatCurrency(inv.total, inv.currency)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
 

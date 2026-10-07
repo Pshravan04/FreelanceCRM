@@ -109,46 +109,85 @@ export default function PaymentsPage() {
             </button>
           </div>
         ) : (
-          <table className="w-full data-table">
-            <thead>
-              <tr>
-                <th className="text-left">Date</th>
-                <th className="text-left">Client</th>
-                <th className="text-left">Invoice</th>
-                <th className="text-left">Method</th>
-                <th className="text-left">Ref #</th>
-                <th className="text-right">Amount</th>
-                <th className="w-8" />
-              </tr>
-            </thead>
-            <tbody>
+          <div className="w-full">
+            <div className="hidden md:block">
+              <table className="w-full data-table">
+                <thead>
+                  <tr>
+                    <th className="text-left">Date</th>
+                    <th className="text-left">Client</th>
+                    <th className="text-left">Invoice</th>
+                    <th className="text-left">Method</th>
+                    <th className="text-left">Ref #</th>
+                    <th className="text-right">Amount</th>
+                    <th className="w-8" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {payments.map(payment => (
+                    <tr key={payment.id} className="hover:bg-[var(--color-muted)]/50 transition-colors group">
+                      <td className="font-medium text-[var(--color-foreground)]">{formatDate(payment.payment_date)}</td>
+                      <td className="text-[var(--color-muted-foreground)]">{payment.client?.name}</td>
+                      <td>
+                        {payment.invoice ? (
+                          <Link href={`/invoices/${payment.invoice_id}`} className="text-xs font-medium text-[var(--color-foreground)] hover:underline">
+                            {payment.invoice.invoice_number}
+                          </Link>
+                        ) : (
+                          <span className="text-xs text-[var(--color-muted-foreground)]">—</span>
+                        )}
+                      </td>
+                      <td className="text-[var(--color-muted-foreground)] text-xs">{payment.payment_method.replace('_', ' ')}</td>
+                      <td className="text-[var(--color-muted-foreground)] text-xs">{payment.reference || '—'}</td>
+                      <td className="text-right font-semibold text-green-600">
+                        +{formatCurrency(payment.amount, 'INR')}
+                      </td>
+                      <td className="text-center">
+                        <button onClick={() => handleDelete(payment.id)} className="p-1.5 text-[var(--color-muted-foreground)] hover:text-red-500 rounded-md transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-red-50">
+                          <Trash2 size={14} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="md:hidden flex flex-col divide-y divide-[var(--color-border)]">
               {payments.map(payment => (
-                <tr key={payment.id} className="hover:bg-[var(--color-muted)]/50 transition-colors">
-                  <td className="font-medium text-[var(--color-foreground)]">{formatDate(payment.payment_date)}</td>
-                  <td className="text-[var(--color-muted-foreground)]">{payment.client?.name}</td>
-                  <td>
+                <div key={payment.id} className="p-4 bg-[var(--color-background)] hover:bg-[var(--color-muted)]/50 transition-colors">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="font-medium text-sm text-[var(--color-foreground)]">{formatDate(payment.payment_date)}</p>
+                      <p className="text-sm text-[var(--color-muted-foreground)]">{payment.client?.name}</p>
+                    </div>
+                    <p className="font-semibold text-green-600">+{formatCurrency(payment.amount, 'INR')}</p>
+                  </div>
+                  
+                  <div className="flex items-center justify-between text-xs text-[var(--color-muted-foreground)]">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-[var(--color-muted)] px-2 py-0.5 rounded-full">{payment.payment_method.replace('_', ' ')}</span>
+                      {payment.reference && <span>Ref: {payment.reference}</span>}
+                    </div>
                     {payment.invoice ? (
-                      <Link href={`/invoices/${payment.invoice_id}`} className="text-xs font-medium text-[var(--color-foreground)] hover:underline">
+                      <Link href={`/invoices/${payment.invoice_id}`} className="text-[var(--color-foreground)] font-medium hover:underline">
                         {payment.invoice.invoice_number}
                       </Link>
                     ) : (
-                      <span className="text-xs text-[var(--color-muted-foreground)]">—</span>
+                      <span>—</span>
                     )}
-                  </td>
-                  <td className="text-[var(--color-muted-foreground)] text-xs">{payment.payment_method.replace('_', ' ')}</td>
-                  <td className="text-[var(--color-muted-foreground)] text-xs">{payment.reference || '—'}</td>
-                  <td className="text-right font-semibold text-green-600">
-                    +{formatCurrency(payment.amount, 'INR')}
-                  </td>
-                  <td className="text-center">
-                    <button onClick={() => handleDelete(payment.id)} className="p-1.5 text-[var(--color-muted-foreground)] hover:text-red-500 rounded-md transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-red-50">
+                  </div>
+
+                  <div className="mt-3 flex justify-end">
+                    <button onClick={() => handleDelete(payment.id)} className="p-2 text-[var(--color-muted-foreground)] hover:text-red-500 rounded-md transition-colors bg-[var(--color-muted)]/50 hover:bg-red-50">
                       <Trash2 size={14} />
                     </button>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </div>
         )}
       </div>
 

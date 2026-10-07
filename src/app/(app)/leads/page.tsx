@@ -168,76 +168,103 @@ function LeadsContent() {
 
       {/* Table view */}
       {view === 'table' && (
-        <div className="card overflow-x-auto">
+        <div className="card overflow-hidden pb-16 md:pb-0">
           {loading ? (
             <TableSkeleton />
           ) : leads.length === 0 ? (
             <EmptyState onAdd={() => setAddModalOpen(true)} />
           ) : (
-            <table className="w-full data-table">
-              <thead>
-                <tr>
-                  <th className="text-left">Name</th>
-                  <th className="text-left">Company</th>
-                  <th className="text-left">Status</th>
-                  <th className="text-left">Value</th>
-                  <th className="text-left">Source</th>
-                  <th className="text-left">Follow-up</th>
-                  <th className="text-left">Created</th>
-                  <th className="w-8" />
-                </tr>
-              </thead>
-              <tbody>
-                {leads.map((lead) => (
-                  <tr key={lead.id} className="cursor-pointer" onClick={() => router.push(`/leads/${lead.id}`)}>
-                    <td onClick={e => e.stopPropagation()}>
-                      <Link href={`/leads/${lead.id}`} className="font-medium text-[var(--color-foreground)] hover:underline">
-                        {lead.name}
-                      </Link>
-                      {lead.email && <p className="text-xs text-[var(--color-muted-foreground)]">{lead.email}</p>}
-                    </td>
-                    <td className="text-[var(--color-muted-foreground)]">{lead.company || '—'}</td>
-                    <td onClick={e => e.stopPropagation()}>
-                      <select
-                        value={lead.status}
-                        onChange={(e) => handleStatusChange(lead.id, e.target.value as LeadStatus)}
-                        className={cn('text-xs font-medium px-2 py-1 rounded-md border cursor-pointer focus:outline-none', getStatusColor(lead.status))}
-                        onClick={e => e.stopPropagation()}
-                      >
-                        {LEAD_STATUSES.map(s => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
-                      </select>
-                    </td>
-                    <td className="font-medium">{formatCurrency(lead.estimated_value, currency)}</td>
-                    <td className="text-[var(--color-muted-foreground)] text-xs">{lead.source}</td>
-                    <td className="text-[var(--color-muted-foreground)] text-xs">{formatDate(lead.next_follow_up)}</td>
-                    <td className="text-[var(--color-muted-foreground)] text-xs">{formatDate(lead.created_at)}</td>
-                    <td onClick={e => e.stopPropagation()}>
-                      <div className="relative">
-                        <button
-                          onClick={() => setOpenMenuId(openMenuId === lead.id ? null : lead.id)}
-                          className="p-1 rounded hover:bg-[var(--color-muted)] text-[var(--color-muted-foreground)]"
-                        >
-                          <MoreHorizontal size={15} />
-                        </button>
-                        {openMenuId === lead.id && (
-                          <div className="absolute right-0 top-full mt-1 w-40 bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg shadow-lg z-10 overflow-hidden animate-fade-in">
-                            <Link href={`/leads/${lead.id}`} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--color-muted)]" onClick={() => setOpenMenuId(null)}>
-                              <ExternalLink size={13} /> View
-                            </Link>
-                            <Link href={`/leads/${lead.id}?edit=1`} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--color-muted)]" onClick={() => setOpenMenuId(null)}>
-                              <Edit2 size={13} /> Edit
-                            </Link>
-                            <button onClick={() => handleDelete(lead.id)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950">
-                              <Trash2 size={13} /> Delete
+            <>
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full data-table">
+                  <thead>
+                    <tr>
+                      <th className="text-left">Name</th>
+                      <th className="text-left">Company</th>
+                      <th className="text-left">Status</th>
+                      <th className="text-left">Value</th>
+                      <th className="text-left">Source</th>
+                      <th className="text-left">Follow-up</th>
+                      <th className="text-left">Created</th>
+                      <th className="w-8" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {leads.map((lead) => (
+                      <tr key={lead.id} className="cursor-pointer" onClick={() => router.push(`/leads/${lead.id}`)}>
+                        <td onClick={e => e.stopPropagation()}>
+                          <Link href={`/leads/${lead.id}`} className="font-medium text-[var(--color-foreground)] hover:underline">
+                            {lead.name}
+                          </Link>
+                          {lead.email && <p className="text-xs text-[var(--color-muted-foreground)]">{lead.email}</p>}
+                        </td>
+                        <td className="text-[var(--color-muted-foreground)]">{lead.company || '—'}</td>
+                        <td onClick={e => e.stopPropagation()}>
+                          <select
+                            value={lead.status}
+                            onChange={(e) => handleStatusChange(lead.id, e.target.value as LeadStatus)}
+                            className={cn('text-xs font-medium px-2 py-1 rounded-md border cursor-pointer focus:outline-none', getStatusColor(lead.status))}
+                            onClick={e => e.stopPropagation()}
+                          >
+                            {LEAD_STATUSES.map(s => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
+                          </select>
+                        </td>
+                        <td className="font-medium">{formatCurrency(lead.estimated_value, currency)}</td>
+                        <td className="text-[var(--color-muted-foreground)] text-xs">{lead.source}</td>
+                        <td className="text-[var(--color-muted-foreground)] text-xs">{formatDate(lead.next_follow_up)}</td>
+                        <td className="text-[var(--color-muted-foreground)] text-xs">{formatDate(lead.created_at)}</td>
+                        <td onClick={e => e.stopPropagation()}>
+                          <div className="relative">
+                            <button
+                              onClick={() => setOpenMenuId(openMenuId === lead.id ? null : lead.id)}
+                              className="p-1 rounded hover:bg-[var(--color-muted)] text-[var(--color-muted-foreground)]"
+                            >
+                              <MoreHorizontal size={15} />
                             </button>
+                            {openMenuId === lead.id && (
+                              <div className="absolute right-0 top-full mt-1 w-40 bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg shadow-lg z-10 overflow-hidden animate-fade-in">
+                                <Link href={`/leads/${lead.id}`} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--color-muted)]" onClick={() => setOpenMenuId(null)}>
+                                  <ExternalLink size={13} /> View
+                                </Link>
+                                <Link href={`/leads/${lead.id}?edit=1`} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--color-muted)]" onClick={() => setOpenMenuId(null)}>
+                                  <Edit2 size={13} /> Edit
+                                </Link>
+                                <button onClick={() => handleDelete(lead.id)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950">
+                                  <Trash2 size={13} /> Delete
+                                </button>
+                              </div>
+                            )}
                           </div>
-                        )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card List */}
+              <div className="md:hidden flex flex-col divide-y divide-[var(--color-border)]">
+                {leads.map((lead) => (
+                  <div key={lead.id} onClick={() => router.push(`/leads/${lead.id}`)} className="p-4 active:bg-[var(--color-muted)] transition-colors cursor-pointer">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-base text-[var(--color-foreground)]">{lead.name}</span>
+                        <span className="text-xs text-[var(--color-muted-foreground)] mt-0.5">{lead.company || lead.email}</span>
                       </div>
-                    </td>
-                  </tr>
+                      <span className={cn('text-[10px] font-bold px-2 py-0.5 rounded-full border', getStatusColor(lead.status))}>
+                        {STATUS_LABELS[lead.status]}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="font-medium text-sm">{formatCurrency(lead.estimated_value, currency)}</span>
+                      <span className="text-[11px] text-[var(--color-muted-foreground)]">{formatDate(lead.created_at)}</span>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            </>
           )}
         </div>
       )}

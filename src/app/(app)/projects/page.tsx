@@ -172,63 +172,94 @@ function ProjectsContent() {
           ))}
         </div>
       ) : (
-        <div className="card overflow-x-auto">
-          <table className="w-full data-table">
-            <thead>
-              <tr>
-                <th className="text-left">Project</th>
-                <th className="text-left">Client</th>
-                <th className="text-left">Status</th>
-                <th className="text-left">Deadline</th>
-                <th className="text-right">Budget</th>
-                <th className="w-8" />
-              </tr>
-            </thead>
-            <tbody>
-              {projects.map(project => (
-                <tr key={project.id} className="cursor-pointer" onClick={() => router.push(`/projects/${project.id}`)}>
-                  <td className="font-medium text-[var(--color-foreground)]">{project.name}</td>
-                  <td className="text-[var(--color-muted-foreground)]">{project.client?.name}</td>
-                  <td onClick={e => e.stopPropagation()}>
-                    <select
-                      value={project.status}
-                      onChange={(e) => handleStatusChange(project.id, e.target.value)}
-                      className={cn('text-xs font-medium px-2 py-1 rounded-md border cursor-pointer focus:outline-none', getStatusColor(project.status))}
-                    >
-                      <option value="NOT_STARTED">Not Started</option>
-                      <option value="IN_PROGRESS">In Progress</option>
-                      <option value="ON_HOLD">On Hold</option>
-                      <option value="COMPLETED">Completed</option>
-                      <option value="CANCELLED">Cancelled</option>
-                    </select>
-                  </td>
-                  <td className="text-[var(--color-muted-foreground)] text-xs">
-                    {project.deadline ? formatDate(project.deadline) : '—'}
-                  </td>
-                  <td className="text-right font-medium">
-                    {project.budget > 0 ? formatCurrency(project.budget, 'INR') : '—'}
-                  </td>
-                  <td onClick={e => e.stopPropagation()}>
-                    <div className="relative">
-                      <button onClick={() => setOpenMenuId(openMenuId === project.id ? null : project.id)} className="p-1 rounded hover:bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
-                        <MoreHorizontal size={15} />
-                      </button>
-                      {openMenuId === project.id && (
-                        <div className="absolute right-0 top-full mt-1 w-40 bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg shadow-lg z-10 overflow-hidden animate-fade-in">
-                          <Link href={`/projects/${project.id}`} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--color-muted)]" onClick={() => setOpenMenuId(null)}>
-                            <ExternalLink size={13} /> View
-                          </Link>
-                          <button onClick={() => { handleDelete(project.id); setOpenMenuId(null); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950">
-                            <Trash2 size={13} /> Delete
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </td>
+        <div className="card overflow-hidden pb-16 md:pb-0">
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full data-table">
+              <thead>
+                <tr>
+                  <th className="text-left">Project</th>
+                  <th className="text-left">Client</th>
+                  <th className="text-left">Status</th>
+                  <th className="text-left">Deadline</th>
+                  <th className="text-right">Budget</th>
+                  <th className="w-8" />
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {projects.map(project => (
+                  <tr key={project.id} className="cursor-pointer" onClick={() => router.push(`/projects/${project.id}`)}>
+                    <td className="font-medium text-[var(--color-foreground)]">{project.name}</td>
+                    <td className="text-[var(--color-muted-foreground)]">{project.client?.name}</td>
+                    <td onClick={e => e.stopPropagation()}>
+                      <select
+                        value={project.status}
+                        onChange={(e) => handleStatusChange(project.id, e.target.value)}
+                        className={cn('text-xs font-medium px-2 py-1 rounded-md border cursor-pointer focus:outline-none', getStatusColor(project.status))}
+                      >
+                        <option value="NOT_STARTED">Not Started</option>
+                        <option value="IN_PROGRESS">In Progress</option>
+                        <option value="ON_HOLD">On Hold</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="CANCELLED">Cancelled</option>
+                      </select>
+                    </td>
+                    <td className="text-[var(--color-muted-foreground)] text-xs">
+                      {project.deadline ? formatDate(project.deadline) : '—'}
+                    </td>
+                    <td className="text-right font-medium">
+                      {project.budget > 0 ? formatCurrency(project.budget, 'INR') : '—'}
+                    </td>
+                    <td onClick={e => e.stopPropagation()}>
+                      <div className="relative">
+                        <button onClick={() => setOpenMenuId(openMenuId === project.id ? null : project.id)} className="p-1 rounded hover:bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
+                          <MoreHorizontal size={15} />
+                        </button>
+                        {openMenuId === project.id && (
+                          <div className="absolute right-0 top-full mt-1 w-40 bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg shadow-lg z-10 overflow-hidden animate-fade-in">
+                            <Link href={`/projects/${project.id}`} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--color-muted)]" onClick={() => setOpenMenuId(null)}>
+                              <ExternalLink size={13} /> View
+                            </Link>
+                            <button onClick={() => { handleDelete(project.id); setOpenMenuId(null); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950">
+                              <Trash2 size={13} /> Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card List */}
+          <div className="md:hidden flex flex-col divide-y divide-[var(--color-border)]">
+            {projects.map((project) => (
+              <div key={project.id} onClick={() => router.push(`/projects/${project.id}`)} className="p-4 active:bg-[var(--color-muted)] transition-colors cursor-pointer">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-base text-[var(--color-foreground)]">{project.name}</span>
+                    <span className="text-xs text-[var(--color-muted-foreground)] mt-0.5">{project.client?.name}</span>
+                  </div>
+                  <span className={cn('text-[10px] font-bold px-2 py-0.5 rounded-full border whitespace-nowrap', getStatusColor(project.status))}>
+                    {project.status.replace('_', ' ')}
+                  </span>
+                </div>
+                
+                <div className="flex items-center justify-between mt-3 text-xs text-[var(--color-muted-foreground)]">
+                  <div className="flex items-center gap-1.5">
+                    <CalendarClock size={13} />
+                    {project.deadline ? formatDate(project.deadline) : 'No deadline'}
+                  </div>
+                  {project.budget > 0 && (
+                    <span className="font-medium text-sm text-[var(--color-foreground)]">
+                      {formatCurrency(project.budget, 'INR')}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

@@ -83,11 +83,11 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
       </Link>
 
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-[var(--color-foreground)]">{lead.name}</h1>
           {lead.company && <p className="text-[var(--color-muted-foreground)] mt-0.5">{lead.company}</p>}
-          <div className="flex items-center gap-3 mt-3">
+          <div className="flex items-center gap-3 mt-3 flex-wrap">
             <span className={`status-badge ${getStatusColor(lead.status)}`}>{lead.status}</span>
             {lead.estimated_value > 0 && (
               <span className="text-sm font-semibold text-[var(--color-foreground)]">
@@ -100,26 +100,27 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
           <button
             onClick={handleConvert}
             disabled={converting || lead.status === 'WON' || lead.status === 'LOST'}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-green-200 text-green-700 bg-green-50 rounded-lg hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-shrink-0 flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium border border-green-200 text-green-700 bg-green-50 rounded-lg hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <UserCheck size={14} />
-            {converting ? 'Converting...' : 'Convert to Client'}
+            <span className="md:hidden">Convert</span>
+            <span className="hidden md:inline">{converting ? 'Converting...' : 'Convert to Client'}</span>
           </button>
           <button
             onClick={() => setEditOpen(true)}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-muted)] transition-colors"
+            className="flex-shrink-0 flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-muted)] transition-colors"
           >
-            <Edit2 size={14} /> Edit
+            <Edit2 size={14} /> <span>Edit</span>
           </button>
           <button
             onClick={handleDelete}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+            className="flex-shrink-0 flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
           >
-            <Trash2 size={14} /> Delete
+            <Trash2 size={14} /> <span>Delete</span>
           </button>
         </div>
       </div>

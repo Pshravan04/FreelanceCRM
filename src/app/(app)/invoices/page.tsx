@@ -115,7 +115,7 @@ function InvoicesContent() {
         </select>
       </div>
 
-      <div className="card overflow-x-auto">
+      <div className="card overflow-hidden pb-16 md:pb-0">
         {loading ? (
           <div className="p-4 space-y-3">
             {[1,2,3,4].map(i => <div key={i} className="skeleton h-10 w-full rounded" />)}
@@ -136,77 +136,109 @@ function InvoicesContent() {
             </button>
           </div>
         ) : (
-          <table className="w-full data-table">
-            <thead>
-              <tr>
-                <th className="text-left">Invoice #</th>
-                <th className="text-left">Client</th>
-                <th className="text-left">Status</th>
-                <th className="text-left">Issue Date</th>
-                <th className="text-left">Due Date</th>
-                <th className="text-right">Amount</th>
-                <th className="w-8" />
-              </tr>
-            </thead>
-            <tbody>
-              {invoices.map(invoice => (
-                <tr key={invoice.id} className="cursor-pointer" onClick={() => router.push(`/invoices/${invoice.id}`)}>
-                  <td className="font-medium text-[var(--color-foreground)]">{invoice.invoice_number}</td>
-                  <td className="text-[var(--color-muted-foreground)]">{invoice.client?.name}</td>
-                  <td>
-                    <span className={cn('text-xs font-medium px-2 py-1 rounded-full border', getStatusColor(invoice.status))}>
+          <>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full data-table">
+                <thead>
+                  <tr>
+                    <th className="text-left">Invoice #</th>
+                    <th className="text-left">Client</th>
+                    <th className="text-left">Status</th>
+                    <th className="text-left">Issue Date</th>
+                    <th className="text-left">Due Date</th>
+                    <th className="text-right">Amount</th>
+                    <th className="w-8" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {invoices.map(invoice => (
+                    <tr key={invoice.id} className="cursor-pointer" onClick={() => router.push(`/invoices/${invoice.id}`)}>
+                      <td className="font-medium text-[var(--color-foreground)]">{invoice.invoice_number}</td>
+                      <td className="text-[var(--color-muted-foreground)]">{invoice.client?.name}</td>
+                      <td>
+                        <span className={cn('text-xs font-medium px-2 py-1 rounded-full border', getStatusColor(invoice.status))}>
+                          {invoice.status}
+                        </span>
+                      </td>
+                      <td className="text-[var(--color-muted-foreground)] text-xs">{formatDate(invoice.issue_date)}</td>
+                      <td className={cn("text-xs font-medium", new Date(invoice.due_date || '') < new Date() && invoice.status !== 'PAID' ? 'text-red-600' : 'text-[var(--color-muted-foreground)]')}>
+                        {formatDate(invoice.due_date)}
+                      </td>
+                      <td className="text-right font-semibold text-[var(--color-foreground)]">
+                        {formatCurrency(invoice.total, invoice.currency)}
+                      </td>
+                      <td onClick={e => e.stopPropagation()}>
+                        <div className="relative">
+                          <button onClick={() => setOpenMenuId(openMenuId === invoice.id ? null : invoice.id)} className="p-1 rounded hover:bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
+                            <MoreHorizontal size={15} />
+                          </button>
+                          {openMenuId === invoice.id && (
+                            <div className="absolute right-0 top-full mt-1 w-40 bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg shadow-lg z-10 overflow-hidden animate-fade-in">
+                              <Link href={`/invoices/${invoice.id}`} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--color-muted)]" onClick={() => setOpenMenuId(null)}>
+                                <ExternalLink size={13} /> View
+                              </Link>
+                              <Link href={`/invoices/${invoice.id}?edit=1`} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--color-muted)]" onClick={() => setOpenMenuId(null)}>
+                                <Edit2 size={13} /> Edit
+                              </Link>
+                              <button onClick={async () => { 
+                                setOpenMenuId(null);
+                                try {
+                                  const { getInvoice } = await import('@/lib/services/data');
+                                  const { generateInvoicePDF } = await import('@/lib/pdf');
+                                  const fullInvoice = await getInvoice(invoice.id);
+                                  if (fullInvoice && fullInvoice.client && fullInvoice.invoice_items) {
+                                    generateInvoicePDF(fullInvoice, fullInvoice.client, fullInvoice.invoice_items);
+                                    toast.success('PDF downloaded');
+                                  }
+                                } catch (e) {
+                                  toast.error('Failed to generate PDF');
+                                  console.error(e);
+                                }
+                              }} className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--color-muted)]">
+                                <Download size={13} /> Download PDF
+                              </button>
+                              <div className="h-px bg-[var(--color-border)]" />
+                              <button onClick={() => { handleDelete(invoice.id); setOpenMenuId(null); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950">
+                                <Trash2 size={13} /> Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card List */}
+            <div className="md:hidden flex flex-col divide-y divide-[var(--color-border)]">
+              {invoices.map((invoice) => (
+                <div key={invoice.id} onClick={() => router.push(`/invoices/${invoice.id}`)} className="p-4 active:bg-[var(--color-muted)] transition-colors cursor-pointer">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-base text-[var(--color-foreground)]">{invoice.invoice_number}</span>
+                      <span className="text-xs text-[var(--color-muted-foreground)] mt-0.5">{invoice.client?.name}</span>
+                    </div>
+                    <span className={cn('text-[10px] font-bold px-2 py-0.5 rounded-full border', getStatusColor(invoice.status))}>
                       {invoice.status}
                     </span>
-                  </td>
-                  <td className="text-[var(--color-muted-foreground)] text-xs">{formatDate(invoice.issue_date)}</td>
-                  <td className={cn("text-xs font-medium", new Date(invoice.due_date || '') < new Date() && invoice.status !== 'PAID' ? 'text-red-600' : 'text-[var(--color-muted-foreground)]')}>
-                    {formatDate(invoice.due_date)}
-                  </td>
-                  <td className="text-right font-semibold text-[var(--color-foreground)]">
-                    {formatCurrency(invoice.total, invoice.currency)}
-                  </td>
-                  <td onClick={e => e.stopPropagation()}>
-                    <div className="relative">
-                      <button onClick={() => setOpenMenuId(openMenuId === invoice.id ? null : invoice.id)} className="p-1 rounded hover:bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
-                        <MoreHorizontal size={15} />
-                      </button>
-                      {openMenuId === invoice.id && (
-                        <div className="absolute right-0 top-full mt-1 w-40 bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg shadow-lg z-10 overflow-hidden animate-fade-in">
-                          <Link href={`/invoices/${invoice.id}`} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--color-muted)]" onClick={() => setOpenMenuId(null)}>
-                            <ExternalLink size={13} /> View
-                          </Link>
-                          <Link href={`/invoices/${invoice.id}?edit=1`} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--color-muted)]" onClick={() => setOpenMenuId(null)}>
-                            <Edit2 size={13} /> Edit
-                          </Link>
-                          <button onClick={async () => { 
-                            setOpenMenuId(null);
-                            try {
-                              const { getInvoice } = await import('@/lib/services/data');
-                              const { generateInvoicePDF } = await import('@/lib/pdf');
-                              const fullInvoice = await getInvoice(invoice.id);
-                              if (fullInvoice && fullInvoice.client && fullInvoice.invoice_items) {
-                                generateInvoicePDF(fullInvoice, fullInvoice.client, fullInvoice.invoice_items);
-                                toast.success('PDF downloaded');
-                              }
-                            } catch (e) {
-                              toast.error('Failed to generate PDF');
-                              console.error(e);
-                            }
-                          }} className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--color-muted)]">
-                            <Download size={13} /> Download PDF
-                          </button>
-                          <div className="h-px bg-[var(--color-border)]" />
-                          <button onClick={() => { handleDelete(invoice.id); setOpenMenuId(null); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950">
-                            <Trash2 size={13} /> Delete
-                          </button>
-                        </div>
-                      )}
+                  </div>
+                  
+                  <div className="flex items-center justify-between mt-3">
+                    <span className="font-medium text-sm">{formatCurrency(invoice.total, invoice.currency)}</span>
+                    <div className="flex flex-col items-end">
+                      <span className="text-[11px] text-[var(--color-muted-foreground)]">Issued: {formatDate(invoice.issue_date)}</span>
+                      <span className={cn("text-[11px] font-medium mt-0.5", new Date(invoice.due_date || '') < new Date() && invoice.status !== 'PAID' ? 'text-red-600' : 'text-[var(--color-muted-foreground)]')}>
+                        Due: {formatDate(invoice.due_date)}
+                      </span>
                     </div>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </>
         )}
       </div>
 

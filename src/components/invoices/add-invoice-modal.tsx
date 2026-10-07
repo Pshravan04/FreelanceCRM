@@ -70,21 +70,26 @@ export function AddInvoiceModal({ open, onClose, onSuccess, clients, projects }:
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
-      <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full max-w-3xl bg-[var(--color-card)] rounded-xl border border-[var(--color-border)] shadow-2xl max-h-[90vh] flex flex-col animate-fade-in">
-        <div className="flex-shrink-0 bg-[var(--color-card)] border-b border-[var(--color-border)] px-6 py-4 flex items-center justify-between rounded-t-xl z-10">
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center sm:p-0">
+      <div className="fixed inset-0 bg-black/40 transition-opacity" onClick={onClose} />
+      <div className="relative w-full max-w-3xl bg-[var(--color-card)] md:rounded-xl rounded-t-2xl border-t md:border border-[var(--color-border)] shadow-2xl max-h-[90vh] flex flex-col animate-slide-up md:animate-fade-in pb-[env(safe-area-inset-bottom)]">
+        {/* Mobile handle */}
+        <div className="w-full flex justify-center pt-3 pb-1 md:hidden" onClick={onClose}>
+          <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+        </div>
+        
+        <div className="flex-shrink-0 bg-[var(--color-card)] border-b border-[var(--color-border)] px-4 md:px-6 py-3 md:py-4 flex items-center justify-between md:rounded-t-xl z-10">
           <h2 className="text-base font-semibold">Create Invoice</h2>
           <button onClick={onClose} className="p-1.5 rounded-md hover:bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
             <X size={16} />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6">
           <form id="invoice-form" onSubmit={handleSubmit} className="space-y-6">
             
             {/* Header info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
               <FormField label="Invoice Number *" required>
                 <input type="text" value={form.invoice_number} onChange={e => set('invoice_number', e.target.value)} required className={inputClass} />
               </FormField>

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Providers } from '@/components/providers';
 
@@ -9,6 +9,20 @@ export const metadata: Metadata = {
   },
   description: 'Manage your entire freelance business — leads, clients, projects, tasks, invoices, and analytics — all in one place.',
   keywords: ['freelancer', 'crm', 'client management', 'invoicing', 'project management'],
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'FreelanceCRM',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#ffffff',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({

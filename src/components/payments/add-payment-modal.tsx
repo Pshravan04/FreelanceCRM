@@ -74,17 +74,22 @@ export function AddPaymentModal({ open, onClose, onSuccess, invoices, clients, d
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
-      <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full max-w-lg bg-[var(--color-card)] rounded-xl border border-[var(--color-border)] shadow-2xl animate-fade-in">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center sm:p-0">
+      <div className="fixed inset-0 bg-black/40 transition-opacity" onClick={onClose} />
+      <div className="relative w-full max-w-lg bg-[var(--color-card)] md:rounded-xl rounded-t-2xl border-t md:border border-[var(--color-border)] shadow-2xl max-h-[90vh] overflow-y-auto animate-slide-up md:animate-fade-in pb-[env(safe-area-inset-bottom)]">
+        {/* Mobile handle */}
+        <div className="w-full flex justify-center pt-3 pb-1 md:hidden" onClick={onClose}>
+          <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+        </div>
+
+        <div className="flex items-center justify-between px-4 md:px-5 py-3 md:py-4 border-b border-[var(--color-border)] sticky top-0 bg-[var(--color-card)] z-10">
           <h2 className="text-base font-semibold">Record Payment</h2>
           <button onClick={onClose} className="p-1.5 rounded-md hover:bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
             <X size={16} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 md:p-5 space-y-4">
           <FormField label="Client *" required>
             <select value={form.client_id} onChange={e => set('client_id', e.target.value)} required className={inputClass} disabled={!!form.invoice_id}>
               <option value="">Select client...</option>
@@ -101,7 +106,7 @@ export function AddPaymentModal({ open, onClose, onSuccess, invoices, clients, d
             </select>
           </FormField>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <FormField label="Amount (₹) *" required>
               <input type="number" value={form.amount} onChange={e => set('amount', e.target.value)} placeholder="0.00" min={0.01} step="0.01" required className={inputClass} />
             </FormField>
@@ -111,7 +116,7 @@ export function AddPaymentModal({ open, onClose, onSuccess, invoices, clients, d
             </FormField>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <FormField label="Payment Method *" required>
               <select value={form.payment_method} onChange={e => set('payment_method', e.target.value)} required className={inputClass}>
                 {PAYMENT_METHODS.map(m => <option key={m} value={m}>{m.replace('_', ' ')}</option>)}

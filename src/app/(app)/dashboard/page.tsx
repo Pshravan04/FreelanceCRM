@@ -126,20 +126,20 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto">
+    <div className="p-4 md:p-6 max-w-[1400px] mx-auto pb-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-start justify-between mb-8 gap-4">
+      <div className="flex flex-col md:flex-row md:items-start justify-between mb-6 md:mb-8 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-foreground)]">
+          <h1 className="text-xl md:text-2xl font-bold text-[var(--color-foreground)]">
             {greeting}, {profile?.full_name?.split(' ')[0] || 'there'} 👋
           </h1>
-          <p className="text-sm text-[var(--color-muted-foreground)] mt-1">
-            {format(new Date(), 'EEEE, MMMM d, yyyy')}
+          <p className="text-xs md:text-sm text-[var(--color-muted-foreground)] mt-1">
+            Here's your business overview
           </p>
         </div>
 
-        {/* Quick Actions */}
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* Quick Actions (Desktop only, mobile uses FAB) */}
+        <div className="hidden md:flex items-center gap-2 flex-wrap">
           <QuickAction label="Add Lead" href="/leads?new=1" />
           <QuickAction label="New Project" href="/projects?new=1" />
           <QuickAction label="Create Invoice" href="/invoices?new=1" primary />
@@ -147,14 +147,14 @@ export default function DashboardPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-6 md:mb-8">
         {kpiCards.map((card) => {
           const Icon = card.icon;
           return (
             <Link
               key={card.label}
               href={card.href}
-              className="card p-4 hover:border-[var(--color-muted-foreground)] transition-all group cursor-pointer"
+              className="card p-3 md:p-4 hover:border-[var(--color-muted-foreground)] transition-all group cursor-pointer"
             >
               <div className="flex items-center justify-between mb-3">
                 <Icon size={16} className={card.color} />

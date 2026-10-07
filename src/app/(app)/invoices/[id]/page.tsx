@@ -61,17 +61,17 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
           </span>
         </div>
         
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
           {invoice.status !== 'PAID' && (
             <button 
               onClick={() => setPaymentModalOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+              className="flex-shrink-0 flex items-center justify-center gap-2 px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
             >
-              <CreditCard size={14} /> Record Payment
+              <CreditCard size={14} /> <span className="hidden sm:inline">Record Payment</span><span className="sm:hidden">Pay</span>
             </button>
           )}
-          <button className="flex items-center gap-2 px-3 py-1.5 border border-[var(--color-border)] text-sm font-medium rounded-lg hover:bg-[var(--color-muted)] transition-colors">
-            <Send size={14} /> Send
+          <button className="flex-shrink-0 flex items-center justify-center gap-2 px-3 py-1.5 border border-[var(--color-border)] text-sm font-medium rounded-lg hover:bg-[var(--color-muted)] transition-colors">
+            <Send size={14} /> <span>Send</span>
           </button>
           <button 
             onClick={async () => {
@@ -86,12 +86,12 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
                 console.error(e);
               }
             }}
-            className="flex items-center gap-2 px-3 py-1.5 border border-[var(--color-border)] text-sm font-medium rounded-lg hover:bg-[var(--color-muted)] transition-colors"
+            className="flex-shrink-0 flex items-center justify-center gap-2 px-3 py-1.5 border border-[var(--color-border)] text-sm font-medium rounded-lg hover:bg-[var(--color-muted)] transition-colors"
           >
-            <Download size={14} /> PDF
+            <Download size={14} /> <span>PDF</span>
           </button>
-          <button onClick={handleDelete} className="flex items-center gap-2 px-3 py-1.5 text-red-600 border border-red-200 text-sm font-medium rounded-lg hover:bg-red-50 transition-colors ml-auto md:ml-2">
-            <Trash2 size={14} /> Delete
+          <button onClick={handleDelete} className="flex-shrink-0 flex items-center justify-center gap-2 px-3 py-1.5 text-red-600 border border-red-200 text-sm font-medium rounded-lg hover:bg-red-50 transition-colors">
+            <Trash2 size={14} /> <span>Delete</span>
           </button>
         </div>
       </div>
@@ -140,26 +140,41 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
           </div>
         )}
 
-        <table className="w-full mb-8">
-          <thead>
-            <tr className="border-b-2 border-[var(--color-border)] text-left">
-              <th className="py-3 text-sm font-semibold text-[var(--color-muted-foreground)]">Description</th>
-              <th className="py-3 text-sm font-semibold text-[var(--color-muted-foreground)] text-right w-24">Qty</th>
-              <th className="py-3 text-sm font-semibold text-[var(--color-muted-foreground)] text-right w-32">Price</th>
-              <th className="py-3 text-sm font-semibold text-[var(--color-muted-foreground)] text-right w-32">Total</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[var(--color-border)]">
-            {invoice.invoice_items?.map((item: any, i: number) => (
-              <tr key={i}>
-                <td className="py-4 text-sm text-[var(--color-foreground)]">{item.description}</td>
-                <td className="py-4 text-sm text-[var(--color-muted-foreground)] text-right">{item.quantity}</td>
-                <td className="py-4 text-sm text-[var(--color-muted-foreground)] text-right">{formatCurrency(item.rate, invoice.currency)}</td>
-                <td className="py-4 text-sm font-medium text-[var(--color-foreground)] text-right">{formatCurrency(item.amount, invoice.currency)}</td>
+        <div className="hidden md:block">
+          <table className="w-full mb-8">
+            <thead>
+              <tr className="border-b-2 border-[var(--color-border)] text-left">
+                <th className="py-3 text-sm font-semibold text-[var(--color-muted-foreground)]">Description</th>
+                <th className="py-3 text-sm font-semibold text-[var(--color-muted-foreground)] text-right w-24">Qty</th>
+                <th className="py-3 text-sm font-semibold text-[var(--color-muted-foreground)] text-right w-32">Price</th>
+                <th className="py-3 text-sm font-semibold text-[var(--color-muted-foreground)] text-right w-32">Total</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-[var(--color-border)]">
+              {invoice.invoice_items?.map((item: any, i: number) => (
+                <tr key={i}>
+                  <td className="py-4 text-sm text-[var(--color-foreground)]">{item.description}</td>
+                  <td className="py-4 text-sm text-[var(--color-muted-foreground)] text-right">{item.quantity}</td>
+                  <td className="py-4 text-sm text-[var(--color-muted-foreground)] text-right">{formatCurrency(item.rate, invoice.currency)}</td>
+                  <td className="py-4 text-sm font-medium text-[var(--color-foreground)] text-right">{formatCurrency(item.amount, invoice.currency)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="md:hidden flex flex-col gap-4 mb-8">
+          <h3 className="text-sm font-semibold text-[var(--color-muted-foreground)] uppercase tracking-wider mb-2">Items</h3>
+          {invoice.invoice_items?.map((item: any, i: number) => (
+            <div key={i} className="border-b border-[var(--color-border)] pb-4 last:border-0 last:pb-0">
+              <p className="font-medium text-sm text-[var(--color-foreground)] mb-2">{item.description}</p>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-[var(--color-muted-foreground)]">{item.quantity} × {formatCurrency(item.rate, invoice.currency)}</span>
+                <span className="font-medium text-[var(--color-foreground)]">{formatCurrency(item.amount, invoice.currency)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
 
         <div className="flex justify-end mb-12">
           <div className="w-64 space-y-3">
