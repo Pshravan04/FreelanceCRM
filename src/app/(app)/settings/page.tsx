@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/auth-context';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
@@ -12,13 +12,23 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(false);
   
-  // Dummy state for demonstration
   const [profileForm, setProfileForm] = useState({
-    name: user?.user_metadata?.full_name || '',
-    email: user?.email || '',
+    name: '',
+    email: '',
     company: '',
     website: '',
   });
+
+  // Update form when user data loads
+  useEffect(() => {
+    if (user) {
+      setProfileForm(prev => ({
+        ...prev,
+        name: user.user_metadata?.full_name || prev.name,
+        email: user.email || prev.email,
+      }));
+    }
+  }, [user]);
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
