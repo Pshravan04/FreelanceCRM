@@ -73,26 +73,39 @@ ALTER TABLE public.files ADD COLUMN IF NOT EXISTS is_client_visible BOOLEAN DEFA
 
 -- 7. Add RLS for Freelancers
 ALTER TABLE public.freelancers ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view own freelancers" ON public.freelancers;
 CREATE POLICY "Users can view own freelancers" ON public.freelancers FOR SELECT USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can insert own freelancers" ON public.freelancers;
 CREATE POLICY "Users can insert own freelancers" ON public.freelancers FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can update own freelancers" ON public.freelancers;
 CREATE POLICY "Users can update own freelancers" ON public.freelancers FOR UPDATE USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can delete own freelancers" ON public.freelancers;
 CREATE POLICY "Users can delete own freelancers" ON public.freelancers FOR DELETE USING (auth.uid() = user_id);
 
 -- 8. Add RLS for Milestones
 ALTER TABLE public.milestones ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view own milestones" ON public.milestones;
 CREATE POLICY "Users can view own milestones" ON public.milestones FOR SELECT USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can insert own milestones" ON public.milestones;
 CREATE POLICY "Users can insert own milestones" ON public.milestones FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can update own milestones" ON public.milestones;
 CREATE POLICY "Users can update own milestones" ON public.milestones FOR UPDATE USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can delete own milestones" ON public.milestones;
 CREATE POLICY "Users can delete own milestones" ON public.milestones FOR DELETE USING (auth.uid() = user_id);
 
 -- 9. Add RLS for Client Updates
 ALTER TABLE public.client_updates ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can view own client_updates" ON public.client_updates;
 CREATE POLICY "Users can view own client_updates" ON public.client_updates FOR SELECT USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can insert own client_updates" ON public.client_updates;
 CREATE POLICY "Users can insert own client_updates" ON public.client_updates FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can update own client_updates" ON public.client_updates;
 CREATE POLICY "Users can update own client_updates" ON public.client_updates FOR UPDATE USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can delete own client_updates" ON public.client_updates;
 CREATE POLICY "Users can delete own client_updates" ON public.client_updates FOR DELETE USING (auth.uid() = user_id);
 
 -- 10. Client Portal RLS Policies (Overlapping policies using OR logic or new policies)
+DROP POLICY IF EXISTS "Clients can view their projects" ON public.projects;
 CREATE POLICY "Clients can view their projects" ON public.projects FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM public.profiles 
@@ -102,6 +115,7 @@ CREATE POLICY "Clients can view their projects" ON public.projects FOR SELECT US
   )
 );
 
+DROP POLICY IF EXISTS "Clients can view their invoices" ON public.invoices;
 CREATE POLICY "Clients can view their invoices" ON public.invoices FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM public.profiles 
@@ -111,6 +125,7 @@ CREATE POLICY "Clients can view their invoices" ON public.invoices FOR SELECT US
   )
 );
 
+DROP POLICY IF EXISTS "Clients can view their invoice items" ON public.invoice_items;
 CREATE POLICY "Clients can view their invoice items" ON public.invoice_items FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM public.invoices 
@@ -121,6 +136,7 @@ CREATE POLICY "Clients can view their invoice items" ON public.invoice_items FOR
   )
 );
 
+DROP POLICY IF EXISTS "Clients can view their milestones" ON public.milestones;
 CREATE POLICY "Clients can view their milestones" ON public.milestones FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM public.projects
@@ -131,6 +147,7 @@ CREATE POLICY "Clients can view their milestones" ON public.milestones FOR SELEC
   )
 );
 
+DROP POLICY IF EXISTS "Clients can view their updates" ON public.client_updates;
 CREATE POLICY "Clients can view their updates" ON public.client_updates FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM public.profiles 
@@ -141,6 +158,7 @@ CREATE POLICY "Clients can view their updates" ON public.client_updates FOR SELE
   )
 );
 
+DROP POLICY IF EXISTS "Clients can view their files" ON public.files;
 CREATE POLICY "Clients can view their files" ON public.files FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM public.profiles 
@@ -151,6 +169,7 @@ CREATE POLICY "Clients can view their files" ON public.files FOR SELECT USING (
   )
 );
 
+DROP POLICY IF EXISTS "Clients can view their client record" ON public.clients;
 CREATE POLICY "Clients can view their client record" ON public.clients FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM public.profiles 
